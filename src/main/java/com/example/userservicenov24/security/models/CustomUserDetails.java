@@ -1,6 +1,11 @@
 package com.example.userservicenov24.security.models;
 
+import com.example.userservicenov24.models.Role;
 import com.example.userservicenov24.models.User;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@JsonDeserialize
+@NoArgsConstructor
+@Getter
+@Setter
 //This CustomUserDetails class will act like a User class for Spring Security.
 public class CustomUserDetails implements UserDetails {
     private String username;
@@ -16,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
     private boolean enabled;
-    private List<CustomGrantedAuthority> grantedAuthorities;
+    private List<CustomGrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
         this.username = user.getEmail();
@@ -26,15 +35,15 @@ public class CustomUserDetails implements UserDetails {
         this.credentialsNonExpired = true;
         this.enabled = true;
         //In the granted authorities, we need to add the roles.
-        this.grantedAuthorities = new ArrayList<>();
-//        for (Role role : user.getRoles()) {
-//            grantedAuthorities.add(new CustomGrantedAuthority(role));
-//        }
+        this.authorities = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            authorities.add(new CustomGrantedAuthority(role));
+        }
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return grantedAuthorities;
+        return authorities;
     }
 
     @Override
